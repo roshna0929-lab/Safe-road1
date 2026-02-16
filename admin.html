@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel</title>
+</head>
+<body>
+<h2>Admin - Add Dangerous Road</h2>
+
+<input id="name" placeholder="Road name">
+<textarea id="coords" placeholder="lat,lng | lat,lng"></textarea>
+<button onclick="saveRoad()">Save</button>
+
+<script>
+function saveRoad(){
+  let data = {
+    name: name.value,
+    coords: coords.value
+  };
+  let roads = JSON.parse(localStorage.getItem("roads") || "[]");
+  roads.push(data);
+  localStorage.setItem("roads", JSON.stringify(roads));
+  alert("Saved!");
+}
+</script>
+</body>
+</html>
