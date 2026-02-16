@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Safe Route</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <input id="from" placeholder="Your location">
+  <input id="to" placeholder="Destination">
+  <button onclick="getRoute()">Go</button>
+</div>
+
+<div id="map"></div>
+
+<div class="bottom">
+  <button onclick="findPlaces('police')">🚓 Police</button>
+  <button onclick="findPlaces('hospital')">🏥 Hospital</button>
+  <button onclick="findPlaces('atm')">🏧 ATM</button>
+  <button onclick="findPlaces('restaurant')">🍽 Restaurant</button>
+  <button onclick="callPolice()">Call Police</button>
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+<script src="app.js"></script>
+</body>
+</html>
