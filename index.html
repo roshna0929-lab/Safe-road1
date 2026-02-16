@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Safe Route Map</title>
+  <style>
+    body { margin:0; font-family: Arial; }
+    #map { height: 100vh; width: 100%; }
+    .topbar {
+      position:absolute; top:10px; left:50%;
+      transform:translateX(-50%);
+      background:white; padding:10px;
+      border-radius:10px; width:80%;
+      z-index:10;
+    }
+    input { width:48%; padding:8px; }
+    .bottom {
+      position:absolute; bottom:10px; left:50%;
+      transform:translateX(-50%);
+      background:white; padding:10px;
+      border-radius:10px; width:90%;
+    }
+    button { padding:8px; margin:5px; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <input id="from" placeholder="Your Location">
+  <input id="to" placeholder="Destination">
+  <button onclick="getRoute()">Go</button>
+</div>
+
+<div id="map"></div>
+
+<div class="bottom">
+  <button onclick="findPlaces('police')">🚓 Police</button>
+  <button onclick="findPlaces('hospital')">🏥 Hospital</button>
+  <button onclick="findPlaces('atm')">🏧 ATM</button>
+  <button onclick="findPlaces('restaurant')">🍽 Restaurant</button>
+  <button onclick="findPlaces('gas_station')">⛽ Petrol</button>
+  <button onclick="callPolice()">Call Police</button>
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+
+<script>
+let map, directionsService, directionsRenderer;
+let userMarker;
+
+function initMap() {
+  navigator.geolocation.getCurrentPosition(pos => {
+    let loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    map = new google.maps.Map(document.getElementById("map"), {
+      center: loc,
+      zoom: 15
+    });
+
+    userMarker = new google.maps.Marker({
+      position: loc,
+      map: map,
+      icon: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+    });
+
+    directionsService = new google.maps.DirectionsService();
+    directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
+
+    markDangerRoads();
+  });
+}
+
+function getRoute() {
+  let request = {
+    origin: document.getElementById("from").value || userMarker.getPosition(),
+    destination: document.getElementById("to").value,
+    travelMode: "DRIVING"
+  };
+
+  directionsService.route(request, (result, status) => {
+    if (status == "OK") {
+      directionsRenderer.setDirections(result);
+    }
+  });
+}
+
+function markDangerRoads() {
+  let dangerRoads = [
+    {lat: 12.9716, lng: 77.5946}, // example points
+    {lat: 12.9725, lng: 77.5955},
+    {lat: 12.9735, lng: 77.5965}
+  ];
+
+  new google.maps.Polyline({
+    path: dangerRoads,
+    geodesic: true,
+    strokeColor: "red",
+    strokeOpacity: 1.0,
+    strokeWeight: 5,
+    map: map
+  });
+}
+
+function findPlaces(type) {
+  let service = new google.maps.places.PlacesService(map);
+  service.nearbySearch({
+    location: userMarker.getPosition(),
+    radius: 2000,
+    type: [type]
+  }, (results) => {
+    results.forEach(place => {
+      new google.maps.Marker({
+        map: map,
+        position: place.geometry.location
+      });
+    });
+  });
+}
+
+function callPolice() {
+  window.location.href = "tel:100";
+}
+
+initMap();
+</script>
+
+</body>
+</html>
